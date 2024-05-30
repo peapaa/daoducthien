@@ -1,0 +1,11 @@
+List out the computational inefficiencies and anti-patterns found in the code block below: 
+
++ WalletBalance interface is missing blockchain properties
++ Defining the getPriority function inside the component results in the function being recreated every time the 
+    component re-renders, which is not necessary.
++ The variable lhsPriority is undefined and the variable balancePriority is created without being used
++ Have not checked balances and prices for valid values ​​before use
++ need to wrap formattedBalances, rows function in useMemo to avoid unnecessary re-rendering
++ formattedBalances function has been created and has not been used. The logic in the rows function is wrong 
+    and needs to be corrected because the items in sortedBalances do not have the formatted attribute.
++ className in the rows function is being set incorrectly

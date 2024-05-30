@@ -1,5 +1,11 @@
 import styles from "./App.module.scss";
-import React, { useContext, useEffect, useState } from "react";
+import React, {
+  useContext,
+  useEffect,
+  useState,
+  useMemo,
+  useCallback,
+} from "react";
 import { Image, Input, Select } from "antd";
 import MyContext from "./context/myContext";
 import Loader from "./components/Loader";
@@ -9,36 +15,27 @@ function App() {
   const { Option } = Select;
   const [search, setSearch] = useState(1);
   const [convertValue, setConvertValue] = useState(0.41);
-  const [convertMoneyPrice, setConvertMoneyPrice] = useState(0.41);
+  const [convertMoneyPriceRight, setConvertMoneyPriceRight] = useState(0.41);
+  const [convertMoneyPriceLeft, setConvertMoneyPriceLeft] = useState(1);
 
   console.log("search", search);
   console.log("convertValue", convertValue);
-
   console.log("moneyPrice", moneyPrice);
-  console.log("convertMoneyPrice", convertMoneyPrice);
+  console.log("convertMoneyPriceRight", convertMoneyPriceRight);
 
-  // set convert price of money was Currency
-  const handleChange = (value) => {
-    console.log(`selected ${value}`);
-    const convertItem = uniqueMoneyPrice.find(
-      (item) => item.currency === value
-    );
-    if (convertItem) {
-      setConvertMoneyPrice(convertItem.price);
-    }
-  };
-
-  // set convert value
+  // Calculate the conversion value
   useEffect(() => {
-    const convert = parseFloat(search) * parseFloat(convertMoneyPrice);
+    const convert =
+      (parseFloat(search) * parseFloat(convertMoneyPriceLeft)) /
+      parseFloat(convertMoneyPriceRight);
     setConvertValue(convert.toFixed(3));
     if (!search) {
       setConvertValue(0);
     }
-  }, [search, convertMoneyPrice]);
+  }, [search, convertMoneyPriceRight, convertMoneyPriceLeft]);
 
-  // unique money item
-  const getUniqueCurrencies = (moneyPrice) => {
+  // Function to get unique currencies
+  const getUniqueCurrencies = useCallback((moneyPrice) => {
     const uniqueCurrencies = new Set();
     return moneyPrice.filter((money) => {
       if (!uniqueCurrencies.has(money.currency)) {
@@ -47,16 +44,48 @@ function App() {
       }
       return false;
     });
-  };
+  }, []);
 
-  const uniqueMoneyPrice = getUniqueCurrencies(moneyPrice);
+  const uniqueMoneyPrice = useMemo(
+    () => getUniqueCurrencies(moneyPrice),
+    [moneyPrice, getUniqueCurrencies]
+  );
 
-  // only enter from 0 to 9 and .
-  const handleKeyPress = (e) => {
+  // Handle key press to allow only numbers and dot
+  const handleKeyPress = useCallback((e) => {
     if (!/[0-9.]/.test(e.key)) {
       e.preventDefault();
     }
-  };
+  }, []);
+
+  // Function to set convert price of currency to the right
+  const handleChangeToRight = useCallback(
+    (value) => {
+      console.log(`selected ${value}`);
+      const convertItem = uniqueMoneyPrice.find(
+        (item) => item.currency === value
+      );
+      if (convertItem) {
+        setConvertMoneyPriceRight(convertItem.price);
+      }
+    },
+    [uniqueMoneyPrice]
+  );
+
+  // Function to set convert price of currency to the left
+  const handleChangeToLeft = useCallback(
+    (value) => {
+      console.log(`selected ${value}`);
+      const convertItem = uniqueMoneyPrice.find(
+        (item) => item.currency === value
+      );
+      if (convertItem) {
+        setConvertMoneyPriceLeft(convertItem.price);
+      }
+    },
+    [uniqueMoneyPrice]
+  );
+
   return (
     <div className={styles.app}>
       {loading && <Loader />}
@@ -73,30 +102,26 @@ function App() {
 
           <div className={styles.logoContainer}>
             <Select
-              style={{
-                width: "100%",
-              }}
+              style={{ width: "100%" }}
               variant="borderless"
-              onChange={handleChange}
+              onChange={handleChangeToLeft}
               defaultValue={["USD"]}
             >
-              {uniqueMoneyPrice.map((money, index) => {
-                return (
-                  <Option
-                    value={money.currency}
-                    key={index}
-                    className={styles.infoMoney}
-                  >
-                    <Image
-                      width={24}
-                      className={styles.logo}
-                      src={`https://raw.githubusercontent.com/Switcheo/token-icons/7f53f49c2f0c2cabaf908d106b41f0a8d641805f/tokens/${money.currency}.svg`}
-                      preview={false}
-                    />
-                    <span className={styles.nameMoney}>{money.currency}</span>
-                  </Option>
-                );
-              })}
+              {uniqueMoneyPrice.map((money, index) => (
+                <Option
+                  value={money.currency}
+                  key={index}
+                  className={styles.infoMoney}
+                >
+                  <Image
+                    width={24}
+                    className={styles.logo}
+                    src={`https://raw.githubusercontent.com/Switcheo/token-icons/7f53f49c2f0c2cabaf908d106b41f0a8d641805f/tokens/${money.currency}.svg`}
+                    preview={false}
+                  />
+                  <span className={styles.nameMoney}>{money.currency}</span>
+                </Option>
+              ))}
             </Select>
           </div>
         </div>
@@ -120,30 +145,26 @@ function App() {
 
           <div className={styles.logoContainer}>
             <Select
-              style={{
-                width: "100%",
-              }}
+              style={{ width: "100%" }}
               variant="borderless"
-              onChange={handleChange}
+              onChange={handleChangeToRight}
               defaultValue={["LUNA"]}
             >
-              {uniqueMoneyPrice.map((money, index) => {
-                return (
-                  <Option
-                    value={money.currency}
-                    key={index}
-                    className={styles.infoMoney}
-                  >
-                    <Image
-                      width={24}
-                      className={styles.logo}
-                      src={`https://raw.githubusercontent.com/Switcheo/token-icons/7f53f49c2f0c2cabaf908d106b41f0a8d641805f/tokens/${money.currency}.svg`}
-                      preview={false}
-                    />
-                    <span className={styles.nameMoney}>{money.currency}</span>
-                  </Option>
-                );
-              })}
+              {uniqueMoneyPrice.map((money, index) => (
+                <Option
+                  value={money.currency}
+                  key={index}
+                  className={styles.infoMoney}
+                >
+                  <Image
+                    width={24}
+                    className={styles.logo}
+                    src={`https://raw.githubusercontent.com/Switcheo/token-icons/7f53f49c2f0c2cabaf908d106b41f0a8d641805f/tokens/${money.currency}.svg`}
+                    preview={false}
+                  />
+                  <span className={styles.nameMoney}>{money.currency}</span>
+                </Option>
+              ))}
             </Select>
           </div>
         </div>
