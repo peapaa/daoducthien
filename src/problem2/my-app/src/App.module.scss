@@ -1,0 +1,103 @@
+.app {
+  background-color: rgba(58, 82, 88, 0.96);
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+.appContainer {
+  width: 1100px;
+  background-color: #fff;
+  border-radius: 30px;
+  height: 280px;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+}
+
+.title {
+  margin-top: 0;
+  color: #9fe870;
+}
+
+.inputLayout {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  border: 1px solid rgba(0, 0, 0, 0.7);
+  border-radius: 15px;
+}
+
+.formLayout {
+  width: 100%;
+  margin: 0 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+}
+
+.inputMoney {
+  height: 54px;
+  width: 320px;
+  border: none !important;
+  font-size: 26px;
+  margin: 4px 16px;
+  padding: 0;
+  box-shadow: none !important;
+}
+
+.logoContainer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 140px;
+  cursor: pointer;
+}
+
+.logo {
+  padding-bottom: 5px;
+}
+
+.nameMoney {
+  margin-left: 22px;
+  font-size: 18px;
+  font-weight: 500;
+}
+
+.selectorMoney {
+  width: 140px !important;
+}
+
+@media only screen and (max-width: 1100px) {
+  .app {
+    padding: 0 80px;
+    width: 100vw;
+    height: 100vh;
+  }
+  .appContainer {
+    width: 100vw;
+  }
+  .inputMoney {
+    width: 220px;
+  }
+}
+
+@media only screen and (max-width: 900px) {
+  .appContainer {
+    flex-direction: column;
+    padding: 18px 0;
+    height: 230px;
+  }
+  .inputMoney {
+    font-size: 20px;
+  }
+}
+
+@media only screen and (max-width: 500px) {
+  .inputMoney {
+    width: 120px;
+  }
+}
